@@ -4,6 +4,11 @@ import 'package:shopping_list/data/dummy_items.dart'; // Assuming this file exis
 class GroceryList extends StatelessWidget {
   const GroceryList({super.key});
 
+  void _createNewItem() {
+    // Handle the action for creating a new item here
+    print("Create new item tapped");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,12 +21,38 @@ class GroceryList extends StatelessWidget {
           ),
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _createNewItem,
+        tooltip: 'Create New Shopping Item',
+        child: const Icon(Icons.add),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomAppBar(
+        shape: const CircularNotchedRectangle(),
+        notchMargin: 5.0,
+        color: const Color.fromARGB(255, 62, 160, 240),
+        child: Container(
+          height: 40.0,
+          child: const Center(
+            child: Text(
+              'Create New Shopping Item',
+              style: TextStyle(color: Colors.white, fontSize: 16.0),
+            ),
+          ),
+        ),
+      ),
       body: Column(
         children: [
           Center(
-            child:  Image.asset("lib/assets/8882813.jpg",width:300,height: 250,),
+            child: Image.asset(
+              "lib/assets/3 (4).png",
+              width: 350,
+              height: 300,
+            ),
           ),
-          const SizedBox(height: 10,),
+          const SizedBox(
+            height: 10,
+          ),
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.all(12),
