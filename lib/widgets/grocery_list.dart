@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shopping_list/data/dummy_items.dart'; // Assuming this file exists
+import 'package:shopping_list/data/dummy_items.dart';
 
 class GroceryList extends StatelessWidget {
   const GroceryList({super.key});
@@ -13,63 +13,84 @@ class GroceryList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: const Center(
           child: Text(
             "My Shopping List",
             textAlign: TextAlign.center,
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _createNewItem,
-        tooltip: 'Create New Shopping Item',
-        child: const Icon(Icons.add),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 5.0,
-        color: const Color.fromARGB(255, 62, 160, 240),
-        child: Container(
-          height: 40.0,
-          child: const Center(
-            child: Text(
-              'Create New Shopping Item',
-              style: TextStyle(color: Colors.white, fontSize: 16.0),
-            ),
-          ),
-        ),
-      ),
+      backgroundColor: Colors.blue,
       body: Column(
         children: [
-          Center(
-            child: Image.asset(
-              "lib/assets/3 (4).png",
-              width: 350,
-              height: 300,
-            ),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(12),
-              itemCount: groceryItems.length,
-              itemBuilder: (ctx, index) {
-                final item = groceryItems[index];
-                return ListTile(
-                  title: Text(item.name),
-                  leading: Container(
-                    height: 24,
-                    width: 24,
-                    color: item.category.color,
+            flex: 35,
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                // borderRadius: BorderRadius.circular(65)
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(40),
+                  bottomRight: Radius.circular(40),
+                ),
+              ),
+              child: Column(
+                children: [
+                  Center(
+                    child: Image.asset(
+                      "lib/assets/3 (4).png",
+                      width: 350,
+                      height: 300,
+                    ),
                   ),
-                  trailing: Text(item.quantity.toString()),
-                );
-              },
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(12),
+                      itemCount: groceryItems.length,
+                      itemBuilder: (ctx, index) {
+                        final item = groceryItems[index];
+                        return ListTile(
+                          title: Text(item.name),
+                          leading: Container(
+                            height: 24,
+                            width: 24,
+                            color: item.category.color,
+                          ),
+                          trailing: Text(item.quantity.toString()),
+                        );
+                      },
+                    ),
+                  )
+                ],
+              ),
             ),
+          ),
+          const Expanded(
+            flex: 3,
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 25,
+                ),
+                Text('Create new list',
+                    style: TextStyle(color: Colors.white, fontSize: 22),
+                    textAlign: TextAlign.right),
+                SizedBox(
+                  width: 180,
+                ),
+                Icon(
+                  Icons.add_circle,
+                  color: Colors.white,
+                  size: 40,
+                ),
+              ],
+            ),
+            // ),
           ),
         ],
       ),
