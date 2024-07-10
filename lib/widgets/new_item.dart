@@ -1,19 +1,20 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:shopping_list/data/dummy_items.dart';
-import 'package:shopping_list/widgets/new_item.dart';
-
-class GroceryList extends StatefulWidget {
-  const GroceryList({super.key});
-
+import 'package:shopping_list/widgets/grocery_list.dart';
+class AddNewItem extends StatefulWidget {
+  const AddNewItem({super.key});
   @override
-  State<GroceryList> createState() => _GroceryListState();
+  State<AddNewItem> createState() {
+    return _AddNewItemState();
+  }
 }
 
-class _GroceryListState extends State<GroceryList> {
-void _createNewItem(BuildContext context) {
+class _AddNewItemState extends State<AddNewItem> {
+  @override
+  Widget build(BuildContext context) {
+void _showShoppingItems(BuildContext context) {
   Navigator.of(context).pushReplacement(PageRouteBuilder(
-    pageBuilder: (context, animation, secondaryAnimation) => const AddNewItem(),
+    pageBuilder: (context, animation, secondaryAnimation) => const GroceryList(),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       const begin = 0.0;
       const end = 1.0;
@@ -29,26 +30,22 @@ void _createNewItem(BuildContext context) {
     },
   ));
 }
-
-  @override
-  Widget build(BuildContext context) {
-    var mobileWidth = MediaQuery.of(context).size.width;
+    final mobileWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        elevation: 5,
         automaticallyImplyLeading: false,
-        // forceMaterialTransparency: true,
-        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+        elevation: 5,
+        // backgroundColor: Colors.white,
         title: const Center(
           child: Text(
-            "My Shopping List",
-            textAlign: TextAlign.center,
+            "Add New Shopping Item",
+            // textAlign: TextAlign.center,
             style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
           ),
         ),
       ),
       backgroundColor: Colors.blue,
-      body: Column(
+      body:Column(
         children: [
           Expanded(
             flex: 35,
@@ -73,24 +70,7 @@ void _createNewItem(BuildContext context) {
                   const SizedBox(
                     height: 10,
                   ),
-                  Expanded(
-                    child: ListView.builder(
-                      padding: const EdgeInsets.all(12),
-                      itemCount: groceryItems.length,
-                      itemBuilder: (ctx, index) {
-                        final item = groceryItems[index];
-                        return ListTile(
-                          title: Text(item.name),
-                          leading: Container(
-                            height: 24,
-                            width: 24,
-                            color: item.category.color,
-                          ),
-                          trailing: Text(item.quantity.toString()),
-                        );
-                      },
-                    ),
-                  )
+                
                 ],
               ),
             ),
@@ -104,11 +84,11 @@ void _createNewItem(BuildContext context) {
                 ),
                 RichText(
                   text:  TextSpan(
-                    text: "Create new item",
+                    text: "Show Cart",
                     style: const TextStyle(fontSize: 20),
                     recognizer: TapGestureRecognizer()
                     ..onTap = (){
-                      _createNewItem(context);
+                      _showShoppingItems(context);
                     }
                   ),
                   
@@ -118,14 +98,14 @@ void _createNewItem(BuildContext context) {
                 //     style: TextStyle(color: Colors.white, fontSize: 22),
                 //     textAlign: TextAlign.right),
                 SizedBox(
-                  width: mobileWidth - 230,
+                  width: mobileWidth - 178,
                 ),
                 IconButton(
                   icon:const Icon(Icons.add_circle),
                   color: Colors.white,
                   iconSize: 36,
                   onPressed:() {
-                    _createNewItem(context);
+                    _showShoppingItems(context);
                   },
                 ),
               ],
