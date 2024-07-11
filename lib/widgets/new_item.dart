@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:shopping_list/data/categories.dart';
 import 'package:shopping_list/widgets/grocery_list.dart';
 class AddNewItem extends StatefulWidget {
   const AddNewItem({super.key});
@@ -58,20 +59,107 @@ void _showShoppingItems(BuildContext context) {
                   bottomRight: Radius.circular(40),
                 ),
               ),
-              child: Column(
-                children: [
-                  Center(
-                    child: Image.asset(
-                      "lib/assets/3 (4).png",
-                      width: 350,
-                      height: 300,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Center(
+                      child: Image.asset(
+                        "lib/assets/3 (4).png",
+                        width: 350,
+                        height: 300,
+                      ),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                
-                ],
+                    const SizedBox(
+                      height: 10,
+                    ),
+                  //  SingleChildScrollView(
+                     Center(
+                       child: Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Center(
+                          child: Form(
+                          
+                              child: Column(
+                                children: [
+                     
+                                  TextFormField(
+                                    maxLength: 50,
+                                    decoration:InputDecoration(
+                                      prefixIcon: const Icon(Icons.add_shopping_cart),
+                                      // alignLabelWithHint: true,
+                                      // hintText: "Please Enter the Name of Item",
+                                      // hintFadeDuration: Duration(seconds: 4),
+                                      hintTextDirection:TextDirection.rtl,
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      label: const Text('Name'),
+                                    ),
+                                    
+                                    validator: (value) {
+                                      return 'd';
+                                    },
+                                  ),
+                     
+                                  TextFormField(
+                                    maxLength: 4,
+                                    decoration:  InputDecoration(
+                                      label: const Text('Quantity'),
+                                      prefixIcon: const Icon(Icons.numbers_sharp),
+                                      hintText: "Enter Quantity of item",
+                                     border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                    ),
+                                    initialValue: '1',
+                                  ),
+                                
+                                  DropdownButtonFormField(
+                                    decoration:  InputDecoration(
+                                      label:const Text("Category"),
+                                      prefixIcon: const Icon(Icons.category),
+                                      hintText: "Select Category",
+                                         border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                    ),
+                                    items: [
+                                    for (final Category in categories.entries)
+                                      DropdownMenuItem(
+                                        value: Category.value,
+                                        child:Row(
+                                        children: [
+                                          Container(
+                                            width: 16,
+                                            height: 16,
+                                            color: Category.value.color,
+                                          ),
+                                          const SizedBox(width: 10,),
+                                          Text(Category.value.title)
+                                        ],
+                                      ))
+                                  ], onChanged: (value) {
+                                    
+                                  },),
+                                  const SizedBox(height:7,),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      TextButton(onPressed: (){}, child: const Text("Reset"),),
+                                      ElevatedButton(onPressed: (){}, child: const Text('Add Item'),),
+                                    ],
+                                  )
+                                ],
+                                
+                              ),
+                         
+                            ),
+                        ),
+                                       ),
+                     ),
+                  //  )
+                  ],
+                ),
               ),
             ),
           ),
@@ -101,7 +189,7 @@ void _showShoppingItems(BuildContext context) {
                   width: mobileWidth - 178,
                 ),
                 IconButton(
-                  icon:const Icon(Icons.add_circle),
+                  icon:const Icon(Icons.shopping_cart),
                   color: Colors.white,
                   iconSize: 36,
                   onPressed:() {
