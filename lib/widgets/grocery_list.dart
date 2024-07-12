@@ -1,6 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:shopping_list/data/dummy_items.dart';
+import 'package:shopping_list/model/grocery_item_model.dart';
 import 'package:shopping_list/widgets/new_item.dart';
 
 class GroceryList extends StatefulWidget {
@@ -11,24 +11,38 @@ class GroceryList extends StatefulWidget {
 }
 
 class _GroceryListState extends State<GroceryList> {
-void _createNewItem(BuildContext context) {
-  Navigator.of(context).pushReplacement(PageRouteBuilder(
-    pageBuilder: (context, animation, secondaryAnimation) => const AddNewItem(),
-    transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      const begin = 0.0;
-      const end = 1.0;
-      const curve = Curves.ease;
+  final List<GroceryItem> _groceryItems = [];
 
-      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-      var opacityAnimation = animation.drive(tween);
+  void _createNewItem(BuildContext context) async {
+    final newItem = await Navigator.of(context).push<GroceryItem>(
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => const AddNewItem(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = 0.0;
+          const end = 1.0;
+          const curve = Curves.ease;
 
-      return FadeTransition(
-        opacity: opacityAnimation,
-        child: child,
-      );
-    },
-  ));
-}
+          var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+          var opacityAnimation = animation.drive(tween);
+
+          return FadeTransition(
+            opacity: opacityAnimation,
+            child: child,
+          );
+        },
+      ),
+    );
+
+    if (newItem == null) {
+      return;
+    }
+
+    setState(() {
+      _groceryItems.add(newItem);
+    });
+
+    print(_groceryItems);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +51,6 @@ void _createNewItem(BuildContext context) {
       appBar: AppBar(
         elevation: 5,
         automaticallyImplyLeading: false,
-        // forceMaterialTransparency: true,
         backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         title: const Center(
           child: Text(
@@ -55,7 +68,6 @@ void _createNewItem(BuildContext context) {
             child: Container(
               decoration: const BoxDecoration(
                 color: Colors.white,
-                // borderRadius: BorderRadius.circular(65)
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(40),
                   bottomRight: Radius.circular(40),
@@ -76,9 +88,9 @@ void _createNewItem(BuildContext context) {
                   Expanded(
                     child: ListView.builder(
                       padding: const EdgeInsets.all(12),
-                      itemCount: groceryItems.length,
+                      itemCount: _groceryItems.length,
                       itemBuilder: (ctx, index) {
-                        final item = groceryItems[index];
+                        final item = _groceryItems[index];
                         return ListTile(
                           title: Text(item.name),
                           leading: Container(
@@ -99,38 +111,32 @@ void _createNewItem(BuildContext context) {
             flex: 3,
             child: Row(
               children: [
-              const SizedBox(
+                const SizedBox(
                   width: 25,
                 ),
                 RichText(
-                  text:  TextSpan(
+                  text: TextSpan(
                     text: "Create new item",
                     style: const TextStyle(fontSize: 20),
                     recognizer: TapGestureRecognizer()
-                    ..onTap = (){
-                      _createNewItem(context);
-                    }
+                      ..onTap = () {
+                        _createNewItem(context);
+                      },
                   ),
-                  
                 ),
-                // IconButton.outlined(onPressed: onPressed, icon)
-                // const Text('Create new list',
-                //     style: TextStyle(color: Colors.white, fontSize: 22),
-                //     textAlign: TextAlign.right),
                 SizedBox(
                   width: mobileWidth - 230,
                 ),
                 IconButton(
-                  icon:const Icon(Icons.add_circle),
+                  icon: const Icon(Icons.add_circle),
                   color: Colors.white,
                   iconSize: 36,
-                  onPressed:() {
+                  onPressed: () {
                     _createNewItem(context);
                   },
                 ),
               ],
             ),
-            // ),
           ),
         ],
       ),
