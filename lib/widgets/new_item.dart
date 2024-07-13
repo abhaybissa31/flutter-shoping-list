@@ -112,17 +112,18 @@ class _AddNewItemState extends State<AddNewItem> {
                                   validator: (value) {
                                     if (value == null ||
                                         value.isEmpty ||
-                                        value.trim().length <= 1 ||
+                                        value.trim().isEmpty ||
                                         value.trim().length > 50) {
-                                      return 'Value must be between 1 and 50 characters';
+                                        return 'Value must be between 1 and 50 characters';
                                     }
+                                    
                                   },
                                   onSaved: (value) {
                                     _enteredName = value!;
                                   },
                                 ),
                                 const SizedBox(
-                                  height: 5,
+                                  height: 8,
                                 ),
                                 TextFormField(
                                   maxLength: 4,
@@ -141,15 +142,16 @@ class _AddNewItemState extends State<AddNewItem> {
                                         value.isEmpty ||
                                         int.tryParse(value) == null ||
                                         int.tryParse(value)! <= 0) {
-                                      return 'Must be a valid, Positive number';
+                                        return 'Must be a valid, Positive number';
                                     }
+                                     
                                   },
                                   onSaved: (value) {
                                     _enteredQuantity = int.parse(value!);
                                   },
                                 ),
                                 const SizedBox(
-                                  height: 5,
+                                  height: 8,
                                 ),
                                 DropdownButtonFormField(
                                   value: _selectedCategory,
@@ -187,7 +189,7 @@ class _AddNewItemState extends State<AddNewItem> {
                                   },
                                 ),
                                 const SizedBox(
-                                  height: 7,
+                                  height: 8,
                                 ),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.end,

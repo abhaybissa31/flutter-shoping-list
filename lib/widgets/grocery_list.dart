@@ -16,13 +16,15 @@ class _GroceryListState extends State<GroceryList> {
   void _createNewItem(BuildContext context) async {
     final newItem = await Navigator.of(context).push<GroceryItem>(
       PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => const AddNewItem(),
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            const AddNewItem(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           const begin = 0.0;
           const end = 1.0;
           const curve = Curves.ease;
 
-          var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+          var tween =
+              Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
           var opacityAnimation = animation.drive(tween);
 
           return FadeTransition(
@@ -44,8 +46,44 @@ class _GroceryListState extends State<GroceryList> {
     print(_groceryItems);
   }
 
+  void _removeItem(GroceryItem item) {
+    setState(() {
+      _groceryItems.remove(item);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    Widget content = const Center(
+      child: Text('No Items added yet'),
+    );
+
+    if (_groceryItems.isNotEmpty) {
+      content = ListView.builder(
+        
+        padding: const EdgeInsets.all(12),
+        itemCount: _groceryItems.length,
+        itemBuilder: (ctx, index) {
+          final item = _groceryItems[index];
+          return Dismissible(
+            key: ValueKey(item.id),
+            onDismissed: (direction) {
+              _removeItem(item);
+            },
+            child: ListTile(
+              title: Text(item.name),
+              leading: Container(
+                height: 24,
+                width: 24,
+                color: item.category.color,
+              ),
+              trailing: Text(item.quantity.toString()),
+            ),
+          );
+        },
+      );
+    }
+
     var mobileWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
@@ -84,25 +122,10 @@ class _GroceryListState extends State<GroceryList> {
                     ),
                   ),
                   const SizedBox(
-                    height: 10,
+                    height: 1,
                   ),
                   Expanded(
-                    child: ListView.builder(
-                      padding: const EdgeInsets.all(12),
-                      itemCount: _groceryItems.length,
-                      itemBuilder: (ctx, index) {
-                        final item = _groceryItems[index];
-                        return ListTile(
-                          title: Text(item.name),
-                          leading: Container(
-                            height: 24,
-                            width: 24,
-                            color: item.category.color,
-                          ),
-                          trailing: Text(item.quantity.toString()),
-                        );
-                      },
-                    ),
+                    child: content,
                   )
                 ],
               ),
