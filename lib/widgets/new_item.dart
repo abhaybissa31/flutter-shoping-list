@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shopping_list/data/categories.dart';
 import 'package:shopping_list/model/category_model.dart';
+import 'package:shopping_list/model/grocery_item_model.dart';
 
 class AddNewItem extends StatefulWidget {
   const AddNewItem({super.key});
@@ -41,21 +42,22 @@ class _AddNewItemState extends State<AddNewItem> {
           ),
         );
 
+        final Map<String,dynamic> resData = json.decode(res.body);
         print(res.body);
         print(res.statusCode);
         
         if (!context.mounted) {
           return;
         }
-        Navigator.of(context).pop();
-        // final newGroceryItem = GroceryItem(
-        //   id: DateTime.now().toString(),
-        //   name: _enteredName,
-        //   quantity: _enteredQuantity,
-        //   category: _selectedCategory,
-        // );
+        // Navigator.of(context).pop();
+        final newGroceryItem = GroceryItem(
+          id: resData['name'],
+          name: _enteredName,
+          quantity: _enteredQuantity,
+          category: _selectedCategory,
+        );
 
-        // Navigator.of(context).pop(newGroceryItem);
+        Navigator.of(context).pop(newGroceryItem);
         return false;
       }
     } else {

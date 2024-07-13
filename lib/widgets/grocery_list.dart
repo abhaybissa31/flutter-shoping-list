@@ -37,6 +37,10 @@ class _GroceryListState extends State<GroceryList> {
     setState(() {
     _groceryItems = _fetchedItems;  
     });
+    print('----------------------------------------------------------------------');
+    print('data loaded');
+    print('----------------------------------------------------------------------');
+
   }
 
   @override
@@ -67,20 +71,24 @@ class _GroceryListState extends State<GroceryList> {
       ),
     );
 
-    // if (newItem == null) {
-    //   return;
-    // }
+    if (newItem == null) {
+      return;
+    }
 
-    // setState(() {
-    //   _groceryItems.add(newItem);
-    // });
+    setState(() {
+      _groceryItems.add(newItem);
+    });
 
     // print(_groceryItems);
 
-    _loadData();
+    // _loadData();
   }
 
   void _removeItem(GroceryItem item) {
+        // final url = Uri.https(
+        // "flutter-shopping-list-e46cf-default-rtdb.asia-southeast1.firebasedatabase.app",
+        // "shopping-list.json");
+        // http.delete(url);
     setState(() {
       _groceryItems.remove(item);
     });
