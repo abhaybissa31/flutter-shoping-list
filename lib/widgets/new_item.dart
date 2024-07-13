@@ -1,8 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:shopping_list/data/categories.dart';
 import 'package:shopping_list/model/category_model.dart';
-import 'package:shopping_list/model/grocery_item_model.dart';
 
 class AddNewItem extends StatefulWidget {
   const AddNewItem({super.key});
@@ -18,20 +20,42 @@ class _AddNewItemState extends State<AddNewItem> {
   var _enteredQuantity = 1;
   var _selectedCategory = categories[Categories.vegetables]!;
 
-  bool _saveItem(bool showShoppingList) {
+  _saveItem(bool showShoppingList) async{
     if (showShoppingList == false) {
       if (_formKey.currentState!.validate()) {
         _formKey.currentState!.save();
         print("saved");
 
-        final newGroceryItem = GroceryItem(
-          id: DateTime.now().toString(),
-          name: _enteredName,
-          quantity: _enteredQuantity,
-          category: _selectedCategory,
+        final url = Uri.https(
+            "flutter-shopping-list-e46cf-default-rtdb.asia-southeast1.firebasedatabase.app",
+            "shopping-list.json");
+       final res = await http.post(
+          url,
+          headers: {'Content-type': 'application/json'},
+          body: json.encode(
+            {
+              'name': _enteredName,
+              'quantity': _enteredQuantity,
+              'category': _selectedCategory.title,
+            },
+          ),
         );
 
-        Navigator.of(context).pop(newGroceryItem);
+        print(res.body);
+        print(res.statusCode);
+        
+        if (!context.mounted) {
+          return;
+        }
+        Navigator.of(context).pop();
+        // final newGroceryItem = GroceryItem(
+        //   id: DateTime.now().toString(),
+        //   name: _enteredName,
+        //   quantity: _enteredQuantity,
+        //   category: _selectedCategory,
+        // );
+
+        // Navigator.of(context).pop(newGroceryItem);
         return false;
       }
     } else {
@@ -102,7 +126,8 @@ class _AddNewItemState extends State<AddNewItem> {
                                 TextFormField(
                                   maxLength: 50,
                                   decoration: InputDecoration(
-                                    prefixIcon: const Icon(Icons.add_shopping_cart),
+                                    prefixIcon:
+                                        const Icon(Icons.add_shopping_cart),
                                     hintTextDirection: TextDirection.rtl,
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10),
@@ -114,9 +139,8 @@ class _AddNewItemState extends State<AddNewItem> {
                                         value.isEmpty ||
                                         value.trim().isEmpty ||
                                         value.trim().length > 50) {
-                                        return 'Value must be between 1 and 50 characters';
+                                      return 'Value must be between 1 and 50 characters';
                                     }
-                                    
                                   },
                                   onSaved: (value) {
                                     _enteredName = value!;
@@ -142,9 +166,8 @@ class _AddNewItemState extends State<AddNewItem> {
                                         value.isEmpty ||
                                         int.tryParse(value) == null ||
                                         int.tryParse(value)! <= 0) {
-                                        return 'Must be a valid, Positive number';
+                                      return 'Must be a valid, Positive number';
                                     }
-                                     
                                   },
                                   onSaved: (value) {
                                     _enteredQuantity = int.parse(value!);

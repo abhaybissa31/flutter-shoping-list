@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:shopping_list/data/categories.dart';
 import 'package:shopping_list/model/grocery_item_model.dart';
 import 'package:shopping_list/widgets/new_item.dart';
 
@@ -11,7 +15,35 @@ class GroceryList extends StatefulWidget {
 }
 
 class _GroceryListState extends State<GroceryList> {
-  final List<GroceryItem> _groceryItems = [];
+   List<GroceryItem> _groceryItems = [];
+
+  void _loadData() async {
+    final url = Uri.https(
+        "flutter-shopping-list-e46cf-default-rtdb.asia-southeast1.firebasedatabase.app",
+        "shopping-list.json");
+    final res = await http.get(url);
+    final Map<String, dynamic> jsonres = json.decode(res.body);
+    final List<GroceryItem> _fetchedItems = [];
+    for (var items in jsonres.entries) {
+      final category = categories.entries.firstWhere((catItem) => catItem.value.title == items.value['category']).value;
+      _fetchedItems.add(
+        GroceryItem(
+          id: items.key,
+          name: items.value['name'],
+          quantity: items.value['quantity'],
+          category: category),
+          );
+    }
+    setState(() {
+    _groceryItems = _fetchedItems;  
+    });
+  }
+
+  @override
+  void initState() {
+    _loadData();
+    super.initState();
+  }
 
   void _createNewItem(BuildContext context) async {
     final newItem = await Navigator.of(context).push<GroceryItem>(
@@ -35,15 +67,17 @@ class _GroceryListState extends State<GroceryList> {
       ),
     );
 
-    if (newItem == null) {
-      return;
-    }
+    // if (newItem == null) {
+    //   return;
+    // }
 
-    setState(() {
-      _groceryItems.add(newItem);
-    });
+    // setState(() {
+    //   _groceryItems.add(newItem);
+    // });
 
-    print(_groceryItems);
+    // print(_groceryItems);
+
+    _loadData();
   }
 
   void _removeItem(GroceryItem item) {
@@ -60,7 +94,6 @@ class _GroceryListState extends State<GroceryList> {
 
     if (_groceryItems.isNotEmpty) {
       content = ListView.builder(
-        
         padding: const EdgeInsets.all(12),
         itemCount: _groceryItems.length,
         itemBuilder: (ctx, index) {
