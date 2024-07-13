@@ -49,8 +49,9 @@ class _GroceryListState extends State<GroceryList> {
     var mobileWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        elevation: 5,
+        elevation: 1,
         automaticallyImplyLeading: false,
+        shadowColor: Color.fromARGB(255, 253, 246, 246),
         backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         title: const Center(
           child: Text(

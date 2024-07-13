@@ -18,20 +18,35 @@ class _AddNewItemState extends State<AddNewItem> {
   var _enteredQuantity = 1;
   var _selectedCategory = categories[Categories.vegetables]!;
 
-  void _saveItem() {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-      print("saved");
+  bool _saveItem(bool showShoppingList) {
+    if (showShoppingList == false) {
+      if (_formKey.currentState!.validate()) {
+        _formKey.currentState!.save();
+        print("saved");
 
-      final newGroceryItem = GroceryItem(
-        id: DateTime.now().toString(),
-        name: _enteredName,
-        quantity: _enteredQuantity,
-        category: _selectedCategory,
-      );
+        final newGroceryItem = GroceryItem(
+          id: DateTime.now().toString(),
+          name: _enteredName,
+          quantity: _enteredQuantity,
+          category: _selectedCategory,
+        );
 
-      Navigator.of(context).pop(newGroceryItem);
+        Navigator.of(context).pop(newGroceryItem);
+        return false;
+      }
+    } else {
+      Navigator.of(context).pop();
+      return true;
     }
+    return false;
+  }
+
+  void _onSaveItemPressed() {
+    _saveItem(false);
+  }
+
+  void _onShowCartPressed() {
+    _saveItem(true);
   }
 
   @override
@@ -40,13 +55,15 @@ class _AddNewItemState extends State<AddNewItem> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        elevation: 5,
+        elevation: 1,
+        shadowColor: Color.fromARGB(255, 253, 246, 246),
         title: const Center(
           child: Text(
             "Add New Shopping Item",
             style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
           ),
         ),
+        backgroundColor: Colors.white,
       ),
       backgroundColor: Colors.blue,
       body: Column(
@@ -145,20 +162,20 @@ class _AddNewItemState extends State<AddNewItem> {
                                     ),
                                   ),
                                   items: [
-                                    for (final Category in categories.entries)
+                                    for (final category in categories.entries)
                                       DropdownMenuItem(
-                                        value: Category.value,
+                                        value: category.value,
                                         child: Row(
                                           children: [
                                             Container(
                                               width: 16,
                                               height: 16,
-                                              color: Category.value.color,
+                                              color: category.value.color,
                                             ),
                                             const SizedBox(
                                               width: 10,
                                             ),
-                                            Text(Category.value.title)
+                                            Text(category.value.title)
                                           ],
                                         ),
                                       )
@@ -182,7 +199,7 @@ class _AddNewItemState extends State<AddNewItem> {
                                       child: const Text("Reset"),
                                     ),
                                     ElevatedButton(
-                                      onPressed: _saveItem,
+                                      onPressed: _onSaveItemPressed,
                                       child: const Text('Add Item'),
                                     ),
                                   ],
@@ -210,9 +227,7 @@ class _AddNewItemState extends State<AddNewItem> {
                     text: "Show Cart",
                     style: const TextStyle(fontSize: 20),
                     recognizer: TapGestureRecognizer()
-                      ..onTap = () {
-                        _saveItem();
-                      },
+                      ..onTap = _onShowCartPressed,
                   ),
                 ),
                 SizedBox(
@@ -222,9 +237,7 @@ class _AddNewItemState extends State<AddNewItem> {
                   icon: const Icon(Icons.shopping_cart),
                   color: Colors.white,
                   iconSize: 36,
-                  onPressed: () {
-                    _saveItem();
-                  },
+                  onPressed: _onShowCartPressed,
                 ),
               ],
             ),
