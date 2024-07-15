@@ -18,6 +18,7 @@ class _GroceryListState extends State<GroceryList> {
   List<GroceryItem> _groceryItems = [];
   var _isLoading = true;
   String? _error;
+  // String? _snackBarError;
 
   void _loadData() async {
     final url = Uri.https(
@@ -101,10 +102,23 @@ class _GroceryListState extends State<GroceryList> {
     });
   }
 
-  void _removeItem(GroceryItem item) {
-    setState(() {
-      _groceryItems.remove(item);
-    });
+  void _removeItem(GroceryItem item) async {
+    final index = _groceryItems.indexOf(item);
+     setState(() {
+          _groceryItems.remove(item);
+        });
+    final url = Uri.https(
+      "flutter-shopping-list-e46cf-default-rtdb.asia-southeast1.firebasedatabase.app",
+      "shopping-list/${item.id}.json"
+    );
+   final res = await http.delete(url);
+   if (res.statusCode >= 400) {
+        setState(() {
+          // _snackBarError = "Unable to delete item, Please try again later.";  
+          _groceryItems.insert(index,item);
+        }
+        );
+   }
   }
 
   @override
@@ -236,6 +250,7 @@ class _GroceryListState extends State<GroceryList> {
                     _createNewItem(context);
                   },
                 ),
+                // SnackBar(content: Text(_snackBarError!)),
               ],
             ),
           ),
