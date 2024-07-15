@@ -15,35 +15,53 @@ class GroceryList extends StatefulWidget {
 }
 
 class _GroceryListState extends State<GroceryList> {
-   List<GroceryItem> _groceryItems = [];
-     var _isLoading = true;
+  List<GroceryItem> _groceryItems = [];
+  var _isLoading = true;
+  String? _error;
 
   void _loadData() async {
     final url = Uri.https(
-        "flutter-shopping-list-e46cf-default-rtdb.asia-southeast1.firebasedatabase.app",
-        "shopping-list.json");
-    final res = await http.get(url);
-    final Map<String, dynamic> jsonres = json.decode(res.body);
-    final List<GroceryItem> _fetchedItems = [];
+      "flutter-shopping-list-e46cf-default-rtdb.asia-southeast1.firebasedatabase.app",
+      "shopping-list.json"
+    );
 
-    for (var items in jsonres.entries) {
-      final category = categories.entries.firstWhere((catItem) => catItem.value.title == items.value['category']).value;
-      _fetchedItems.add(
-        GroceryItem(
-          id: items.key,
-          name: items.value['name'],
-          quantity: items.value['quantity'],
-          category: category),
-          );
+    try {
+      final res = await http.get(url).timeout(const Duration(seconds: 12));
+      
+      if (res.statusCode >= 400) {
+        setState(() {
+          _error = "Failed to fetch data, please try again later or contact support if the problem persists.";
+          _isLoading = false;
+        });
+        return;
+      }
+
+      final Map<String, dynamic> jsonres = json.decode(res.body);
+      final List<GroceryItem> _fetchedItems = [];
+
+      for (var items in jsonres.entries) {
+        final category = categories.entries
+            .firstWhere(
+                (catItem) => catItem.value.title == items.value['category'])
+            .value;
+        _fetchedItems.add(
+          GroceryItem(
+              id: items.key,
+              name: items.value['name'],
+              quantity: items.value['quantity'],
+              category: category),
+        );
+      }
+      setState(() {
+        _groceryItems = _fetchedItems;
+        _isLoading = false;
+      });
+    } catch (error) {
+      setState(() {
+        _error = "Loading data took too long. Please check the Internet or try again later.";
+        _isLoading = false;
+      });
     }
-    setState(() {
-    _groceryItems = _fetchedItems;  
-    _isLoading = false;
-    });
-    print('----------------------------------------------------------------------');
-    print('data loaded');
-    print('----------------------------------------------------------------------');
-
   }
 
   @override
@@ -81,17 +99,9 @@ class _GroceryListState extends State<GroceryList> {
     setState(() {
       _groceryItems.add(newItem);
     });
-
-    // print(_groceryItems);
-
-    // _loadData();
   }
 
   void _removeItem(GroceryItem item) {
-        // final url = Uri.https(
-        // "flutter-shopping-list-e46cf-default-rtdb.asia-southeast1.firebasedatabase.app",
-        // "shopping-list.json");
-        // http.delete(url);
     setState(() {
       _groceryItems.remove(item);
     });
@@ -104,9 +114,16 @@ class _GroceryListState extends State<GroceryList> {
     );
 
     if (_isLoading) {
-      content = const Center(child: Column(children: [CircularProgressIndicator.adaptive(), SizedBox(height: 10,),Text('Please wait while your list is loading.')],),);
-    }
-    if (_groceryItems.isNotEmpty) {
+      content = const Center(
+        child: Column(
+          children: [
+            CircularProgressIndicator.adaptive(),
+            SizedBox(height: 10),
+            Text('Please wait while your list is loading.')
+          ],
+        ),
+      );
+    } else if (_groceryItems.isNotEmpty) {
       content = ListView.builder(
         padding: const EdgeInsets.all(12),
         itemCount: _groceryItems.length,
@@ -128,6 +145,23 @@ class _GroceryListState extends State<GroceryList> {
             ),
           );
         },
+      );
+    } else if (_error != null) {
+      content = Center(
+        child: Padding(
+          padding: const EdgeInsets.all(60.0),
+          child: Column(
+            children: [
+              const Icon(
+                Icons.error_rounded,
+                color: Colors.red,
+                size: 40,
+              ),
+              const SizedBox(height: 15),
+              Text(_error!)
+            ],
+          ),
+        ),
       );
     }
 
@@ -168,9 +202,7 @@ class _GroceryListState extends State<GroceryList> {
                       height: 300,
                     ),
                   ),
-                  const SizedBox(
-                    height: 1,
-                  ),
+                  const SizedBox(height: 1),
                   Expanded(
                     child: content,
                   )
@@ -182,9 +214,7 @@ class _GroceryListState extends State<GroceryList> {
             flex: 3,
             child: Row(
               children: [
-                const SizedBox(
-                  width: 25,
-                ),
+                const SizedBox(width: 25),
                 RichText(
                   text: TextSpan(
                     text: "Create new item",
