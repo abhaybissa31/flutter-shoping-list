@@ -20,10 +20,14 @@ class _AddNewItemState extends State<AddNewItem> {
   var _enteredName = '';
   var _enteredQuantity = 1;
   var _selectedCategory = categories[Categories.vegetables]!;
+  var _isSending = false;
 
   _saveItem(bool showShoppingList) async{
     if (showShoppingList == false) {
       if (_formKey.currentState!.validate()) {
+        setState(() {
+           _isSending = true;
+        });
         _formKey.currentState!.save();
         print("saved");
 
@@ -220,14 +224,14 @@ class _AddNewItemState extends State<AddNewItem> {
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     TextButton(
-                                      onPressed: () {
+                                      onPressed: _isSending ? null :() {
                                         _formKey.currentState!.reset();
                                       },
                                       child: const Text("Reset"),
                                     ),
                                     ElevatedButton(
-                                      onPressed: _onSaveItemPressed,
-                                      child: const Text('Add Item'),
+                                      onPressed: _isSending ? null: _onSaveItemPressed,
+                                      child: _isSending ? const SizedBox(height: 16,width: 16, child: CircularProgressIndicator.adaptive(),): const Text('Add Item'),
                                     ),
                                   ],
                                 )

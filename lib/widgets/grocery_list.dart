@@ -16,6 +16,7 @@ class GroceryList extends StatefulWidget {
 
 class _GroceryListState extends State<GroceryList> {
    List<GroceryItem> _groceryItems = [];
+     var _isLoading = true;
 
   void _loadData() async {
     final url = Uri.https(
@@ -24,6 +25,7 @@ class _GroceryListState extends State<GroceryList> {
     final res = await http.get(url);
     final Map<String, dynamic> jsonres = json.decode(res.body);
     final List<GroceryItem> _fetchedItems = [];
+
     for (var items in jsonres.entries) {
       final category = categories.entries.firstWhere((catItem) => catItem.value.title == items.value['category']).value;
       _fetchedItems.add(
@@ -36,6 +38,7 @@ class _GroceryListState extends State<GroceryList> {
     }
     setState(() {
     _groceryItems = _fetchedItems;  
+    _isLoading = false;
     });
     print('----------------------------------------------------------------------');
     print('data loaded');
@@ -100,6 +103,9 @@ class _GroceryListState extends State<GroceryList> {
       child: Text('No Items added yet'),
     );
 
+    if (_isLoading) {
+      content = const Center(child: Column(children: [CircularProgressIndicator.adaptive(), SizedBox(height: 10,),Text('Please wait while your list is loading.')],),);
+    }
     if (_groceryItems.isNotEmpty) {
       content = ListView.builder(
         padding: const EdgeInsets.all(12),
